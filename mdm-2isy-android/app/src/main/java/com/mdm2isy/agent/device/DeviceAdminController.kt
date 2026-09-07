@@ -39,6 +39,8 @@ interface DevicePolicyGateway {
     fun lockNow()
 
     fun wipeDeviceData(flags: Int)
+
+    fun setLockTaskPackages(packages: Array<String>)
 }
 
 class AndroidDevicePolicyGateway(
@@ -67,6 +69,10 @@ class AndroidDevicePolicyGateway(
         } else {
             policyManager.wipeData(flags)
         }
+    }
+
+    override fun setLockTaskPackages(packages: Array<String>) {
+        policyManager.setLockTaskPackages(adminComponent, packages)
     }
 }
 
@@ -108,6 +114,17 @@ class DeviceAdminController(
 
         return invokePolicy("L'effacement a ete refuse par Android.") {
             gateway.wipeDeviceData(0)
+        }
+    }
+
+    fun setKioskMode(packages: Array<String>): DeviceAdminOperationResult {
+        val precondition = requireActiveAdmin(requireDeviceOwner = true)
+        if (precondition != null) {
+            return precondition
+        }
+
+        return invokePolicy("Le mode kiosque a été refusé par Android.") {
+            gateway.setLockTaskPackages(packages)
         }
     }
 

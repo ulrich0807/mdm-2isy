@@ -41,6 +41,7 @@ class MainActivity : Activity() {
     private lateinit var agentStateValue: TextView
     private lateinit var lastSyncValue: TextView
     private lateinit var startAgentButton: Button
+    private lateinit var kioskButton: Button
     private lateinit var messageValue: TextView
 
     private lateinit var enrollmentStore: EnrollmentStore
@@ -73,13 +74,21 @@ class MainActivity : Activity() {
         if (apiUrlInput.text.isBlank() && BuildConfig.DEFAULT_API_URL.isNotBlank()) {
             apiUrlInput.setText(BuildConfig.DEFAULT_API_URL)
         }
+        
+        val providedApiUrl = intent?.getStringExtra("api_url")
+        val providedToken = intent?.getStringExtra("token")
+        if (providedApiUrl != null) apiUrlInput.setText(providedApiUrl)
+        if (providedToken != null) enrollmentTokenInput.setText(providedToken)
         enrollButton.setOnClickListener { enrollDevice() }
         startAgentButton.setOnClickListener { ensurePermissionsAndStartAgent() }
+        kioskButton.setOnClickListener { toggleKioskMode() }
 
         ensureDeviceOwnerPermissionGrants()
         renderState()
         if (enrollmentStore.isEnrolled()) {
             startAgent(showSuccess = false)
+        } else if (providedApiUrl != null && providedToken != null) {
+            enrollDevice()
         }
     }
 
@@ -121,6 +130,7 @@ class MainActivity : Activity() {
         agentStateValue = findViewById(R.id.agentStateValue)
         lastSyncValue = findViewById(R.id.lastSyncValue)
         startAgentButton = findViewById(R.id.startAgentButton)
+        kioskButton = findViewById(R.id.kioskButton)
         messageValue = findViewById(R.id.messageValue)
     }
 
@@ -224,6 +234,31 @@ class MainActivity : Activity() {
                 ?: getString(R.string.agent_start_failed)
         }
         renderState()
+    }
+
+    private var isKioskModeActive = false
+
+    private fun toggleKioskMode() {
+        val adminController = DeviceAdminController(this)
+        if (!adminController.status().isDeviceOwner) {
+            messageValue.text = "Mode Kiosque nécessite d'être Device Owner."
+            return
+        }
+        try {
+            if (isKioskModeActive) {
+                stopLockTask()
+                adminController.setKioskMode(emptyArray())
+                isKioskModeActive = false
+                kioskButton.text = "Activer Kiosque"
+            } else {
+                adminController.setKioskMode(arrayOf(packageName))
+                startLockTask()
+                isKioskModeActive = true
+                kioskButton.text = "Désactiver Kiosque"
+            }
+        } catch (e: Exception) {
+            messageValue.text = "Erreur Kiosque: ${e.message}"
+        }
     }
 
     private fun renderState() {
