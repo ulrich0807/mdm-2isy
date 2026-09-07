@@ -50,11 +50,13 @@ fun interface CommandExecutionHandle {
 class DeviceCommandExecutor(
     private val adminController: DeviceAdminController,
     private val locationProvider: DeviceLocationProvider,
+    private val appInstaller: AppInstaller,
     private val clock: Clock = Clock.systemUTC(),
 ) {
     constructor(context: Context) : this(
         adminController = DeviceAdminController(context),
         locationProvider = DeviceLocationProvider(context),
+        appInstaller = AppInstaller(context),
     )
 
     fun execute(
@@ -64,6 +66,7 @@ class DeviceCommandExecutor(
         KnownCommandType.LOCATE -> executeLocate(command, callback)
         KnownCommandType.LOCK -> executeLock(callback)
         KnownCommandType.WIPE -> executeWipe(callback)
+        KnownCommandType.INSTALL_APP -> executeInstallApp(command, callback)
         null -> immediate(
             callback,
             CommandExecutionResult.Failure(
@@ -148,6 +151,51 @@ class DeviceCommandExecutor(
         }
 
         return immediate(callback, result)
+    }
+
+    private fun executeInstallApp(
+        command: DeviceCommand,
+        callback: (CommandExecutionResult) -> Unit,
+    ): CommandExecutionHandle {
+        val apkUrl = command.payload.url
+        if (apkUrl.isNullOrBlank()) {
+            return immediate(
+                callback,
+                CommandExecutionResult.Failure(
+                    CommandExecutionErrorCodes.INVALID_COMMAND_PAYLOAD,
+                    "L'URL de l'application est manquante.",
+                ),
+            )
+        }
+
+        if (!adminController.status().isDeviceOwner) {
+            return immediate(
+                callback,
+                CommandExecutionResult.Failure(
+                    CommandExecutionErrorCodes.DEVICE_OWNER_REQUIRED,
+                    "L'installation silencieuse nécessite d'être Device Owner.",
+                ),
+            )
+        }
+
+        appInstaller.installSilently(apkUrl) { success, error ->
+            val result = if (success) {
+                CommandExecutionResult.Success(
+                    CommandExecutionProof(
+                        executedAt = executedAt(),
+                        message = "Installation de l'application lancée avec succès.",
+                    ),
+                )
+            } else {
+                CommandExecutionResult.Failure(
+                    CommandExecutionErrorCodes.DEVICE_OPERATION_FAILED,
+                    error ?: "Erreur d'installation.",
+                )
+            }
+            callback(result)
+        }
+
+        return CommandExecutionHandle { /* Cannot easily cancel download in this simplified version */ }
     }
 
     private fun DeviceAdminOperationResult.Failed.toCommandFailure(): CommandExecutionResult.Failure {

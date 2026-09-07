@@ -22,7 +22,8 @@ data class DeviceCommand(
 enum class KnownCommandType(val wireValue: String) {
     LOCATE("locate"),
     LOCK("lock"),
-    WIPE("wipe");
+    WIPE("wipe"),
+    INSTALL_APP("install_app");
 
     companion object {
         fun fromWireValue(value: String): KnownCommandType? = entries.firstOrNull {
@@ -39,6 +40,8 @@ data class CommandPayload(
     val message: String? = null,
     val timeoutSeconds: Int? = null,
     val highAccuracy: Boolean? = null,
+    val url: String? = null,
+    val packageName: String? = null,
 ) {
     init {
         require(message == null || message.length <= 500) {
@@ -127,6 +130,17 @@ data class CommandProof private constructor(
                 message = message,
                 executedAt = executedAt,
                 wipeStarted = true,
+            )
+        }
+
+        fun installApp(
+            message: String? = null,
+            executedAt: String? = null,
+        ): CommandProof {
+            requireMessage(message)
+            return CommandProof(
+                message = message,
+                executedAt = executedAt,
             )
         }
 

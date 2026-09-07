@@ -320,6 +320,8 @@ class CommandCoordinator(
         payload.message?.let { put("message", it) }
         payload.timeoutSeconds?.let { put("timeout_seconds", it) }
         payload.highAccuracy?.let { put("high_accuracy", it) }
+        payload.url?.let { put("url", it) }
+        payload.packageName?.let { put("package_name", it) }
     }.toString()
 
     private fun decodePayload(rawJson: String): CommandPayload {
@@ -336,6 +338,8 @@ class CommandCoordinator(
             } else {
                 null
             },
+            url = payload.optString("url").takeIf { it.isNotBlank() },
+            packageName = payload.optString("package_name").takeIf { it.isNotBlank() },
         )
     }
 
