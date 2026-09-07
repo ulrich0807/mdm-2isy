@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MDM 2ISY Agent</string>
+    <string name="device_admin_label">Administration MDM 2ISY</string>
+    <string name="device_admin_description">Permet le verrouillage et l’effacement à distance d’un appareil professionnel.</string>
+    <string name="agent_channel_name">Supervision MDM</string>
+    <string name="agent_channel_description">Connexion sécurisée du terminal à la plateforme MDM 2ISY.</string>
+    <string name="agent_notification_title">Terminal supervisé par MDM 2ISY</string>
+    <string name="agent_notification_text">Synchronisation sécurisée active</string>
+    <string name="app_subtitle">Agent Android sécurisé pour terminal professionnel</string>
+    <string name="status_not_enrolled">Non enrôlé</string>
+    <string name="status_enrolled">Enrôlé</string>
+    <string name="enrollment_title">Enrôlement du terminal</string>
+    <string name="enrollment_help">Saisissez l’URL fournie par le QR d’enrôlement et son jeton à usage unique.</string>
+    <string name="api_url_hint">https://serveur/api/v1/device</string>
+    <string name="enrollment_token_hint">Jeton d’enrôlement</string>
+    <string name="enroll_action">Enrôler ce terminal</string>
+    <string name="device_title">État du terminal</string>
+    <string name="start_agent_action">Démarrer la supervision</string>
+    <string name="device_uid_format">Identifiant : %1$s</string>
+    <string name="device_owner_enabled">Device Owner : actif</string>
+    <string name="device_owner_disabled">Device Owner : inactif</string>
+    <string name="agent_running">Agent : actif</string>
+    <string name="agent_stopped">Agent : arrêté</string>
+    <string name="last_sync_never">Dernière synchronisation : aucune</string>
+    <string name="last_sync_format">Dernière synchronisation : %1$s</string>
+    <string name="enrollment_in_progress">Enrôlement en cours…</string>
+    <string name="enrollment_success">Terminal enrôlé avec succès.</string>
+    <string name="api_url_required">L’URL API est obligatoire.</string>
+    <string name="enrollment_token_required">Le jeton d’enrôlement est obligatoire.</string>
+    <string name="agent_started_success">Supervision démarrée.</string>
+    <string name="background_location_missing">Supervision démarrée. La localisation distante restera indisponible tant que l’accès en arrière-plan ne sera pas accordé.</string>
+    <string name="agent_start_failed">Android a refusé le démarrage de la supervision.</string>
+    <string name="enrollment_rejected">Le serveur a refusé l’enrôlement.</string>
+    <string name="server_unreachable">Le serveur MDM est injoignable.</string>
+    <string name="server_http_error">Le serveur MDM a répondu avec l’erreur HTTP %1$d.</string>
+    <string name="invalid_configuration">La configuration saisie est invalide.</string>
+    <string name="enrollment_failed">L’enrôlement a échoué.</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="mdm_blue">#0077FF</color>
+    <color name="mdm_blue_dark">#004FA8</color>
+    <color name="mdm_background">#F4F7FB</color>
+    <color name="mdm_text">#182033</color>
+    <color name="mdm_text_secondary">#5F6B7A</color>
+    <color name="mdm_danger">#B42318</color>
+</resources>
