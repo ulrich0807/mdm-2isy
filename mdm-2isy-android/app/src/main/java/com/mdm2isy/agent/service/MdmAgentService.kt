@@ -76,6 +76,10 @@ class MdmAgentService : Service() {
         }
 
         if (worker.isShutdown) return START_NOT_STICKY
+        if (intent?.getBooleanExtra("FORCE_SYNC", false) == true) {
+            nextAttemptAtEpochMs = 0L
+            worker.execute(::runCycleSafely)
+        }
         if (recurringTaskStarted.compareAndSet(false, true)) {
             worker.scheduleWithFixedDelay(
                 ::runCycleSafely,
@@ -272,6 +276,12 @@ class MdmAgentService : Service() {
             context.applicationContext.startForegroundService(
                 Intent(context.applicationContext, MdmAgentService::class.java),
             )
+        }
+
+        fun triggerImmediateSync(context: Context) {
+            val intent = Intent(context.applicationContext, MdmAgentService::class.java)
+            intent.putExtra("FORCE_SYNC", true)
+            context.applicationContext.startForegroundService(intent)
         }
     }
 }
